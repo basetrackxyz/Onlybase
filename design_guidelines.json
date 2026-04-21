@@ -1,0 +1,133 @@
+{
+  "theme": "LIGHT",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "rationale": "To differentiate from the generic dark 'Web3/crypto' look and the typical OnlyFans aesthetic, OnlyBase uses a clean, editorial, Swiss-Brutalist approach. This 'Coinbase-level polish' builds trust, feels premium, and ensures the content (which is free to view) takes center stage. The Base native blue (#0052FF) is used exclusively for the coveted verified badge and key brand accents to make it pop against the stark monochrome UI.",
+  "typography": {
+    "heading_font": "Outfit",
+    "body_font": "Manrope",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl tracking-tight font-bold",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-bold",
+      "h3": "text-xl sm:text-2xl tracking-tight font-semibold",
+      "h4": "text-lg font-semibold",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm text-gray-500",
+      "overline": "text-xs uppercase tracking-[0.2em] font-bold text-gray-400"
+    },
+    "notes": "Headings must be tightly tracked. Never use Inter. Keep line heights tight on headings and loose on body text."
+  },
+  "colors": {
+    "background": {
+      "app": "#F5F5F5",
+      "mobile_container": "#FFFFFF"
+    },
+    "surface": {
+      "default": "#FFFFFF",
+      "muted": "#F9F9F9",
+      "glass": "bg-white/80 backdrop-blur-xl"
+    },
+    "text": {
+      "primary": "#000000",
+      "secondary": "#666666",
+      "tertiary": "#A1A1AA"
+    },
+    "brand": {
+      "primary": "#0052FF",
+      "verification_badge": "#0052FF",
+      "accent": "#FF4500"
+    },
+    "ui": {
+      "border": "#EAEAEA",
+      "divider": "#F0F0F0",
+      "button_primary_bg": "#000000",
+      "button_primary_text": "#FFFFFF",
+      "button_secondary_bg": "#F4F4F5",
+      "button_secondary_text": "#000000"
+    }
+  },
+  "layout_and_spacing": {
+    "container": "max-w-md mx-auto min-h-screen bg-white relative shadow-2xl overflow-hidden flex flex-col",
+    "padding": "Generous internal padding (p-4 to p-6) for standard views. Posts in feed should have p-4.",
+    "borders": "Use 1px crisp borders (border-gray-200) to separate feed items and layout sections. No soft fuzzy shadows.",
+    "border_radius": "Rounded elements should use rounded-2xl or rounded-full for avatars/buttons. Keep it friendly but crisp.",
+    "navigation": "Fixed bottom navigation bar for mobile feel, with glassmorphism (bg-white/90 backdrop-blur-md border-t border-gray-100). Sticky top header for context."
+  },
+  "components": {
+    "verification_badge": "Use Phosphor's <SealCheck weight='fill' className='text-[#0052FF]' />. This perfectly replicates the scalloped cloud-edge Twitter-style badge.",
+    "buttons": "Primary buttons: bg-black text-white rounded-full py-3 px-6 font-semibold hover:bg-gray-800 transition-colors. Subscribe/Tip buttons can use the brand primary #0052FF for emphasis.",
+    "inputs": "Shadcn UI inputs customized with rounded-xl, 1px border-gray-200, focus:border-black focus:ring-1 focus:ring-black.",
+    "feed_post": "Edge-to-edge layout inside the container. Top: Avatar + Name + Badge + Handle. Middle: Free content (text/image). Bottom: Action bar (Like, Comment, Tip/Share) using Iconoir or Phosphor icons.",
+    "wallet_card": "A stark, beautifully padded card (p-6, rounded-2xl, bg-black text-white) showing ETH/USDC balance, to look like a premium credit card or Coinbase wallet interface.",
+    "swap_interface": "Clean, large typography for inputs (e.g., text-4xl). Token selectors with rounded-full icons. Minimalist approach."
+  },
+  "motion_and_interactions": {
+    "hover_states": "All buttons must darken or lighten on hover/tap. Feed posts slightly dim on tap.",
+    "transitions": "Use 'transition-all duration-200 ease-out' globally.",
+    "tabs": "Smooth slide indicator for tabs (e.g., Feed vs Discover)."
+  },
+  "icons": {
+    "library": "@phosphor-icons/react",
+    "instructions": "Use Phosphor icons. Weight 'regular' for inactive tabs/actions, 'fill' for active tabs, 'fill' for the SealCheck verification badge."
+  },
+  "media": {
+    "logos": [
+      {
+        "category": "app_logo",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96d99d58-6e9a-4982-a9ae-b42ab2b51d16/images/5040964c87025d2c91a6c45d841eb58ab57a242a23d0707599ceff4c9f1421d2.png",
+        "description": "OnlyBase modern logo text with blue badge"
+      }
+    ],
+    "avatars": [
+      {
+        "category": "verified_creator_1",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96d99d58-6e9a-4982-a9ae-b42ab2b51d16/images/2787247fb2a9fbce70fe1624c097be068518beaec080412744f3938146bbd348.png",
+        "description": "Trendy young crypto creator"
+      },
+      {
+        "category": "verified_creator_2",
+        "url": "https://static.prod-images.emergentagent.com/jobs/96d99d58-6e9a-4982-a9ae-b42ab2b51d16/images/7480323ee5f50e9857985ee0f21d48a5970bbe28d733affdb47c83a673561e01.png",
+        "description": "Female finance educator"
+      },
+      {
+        "category": "standard_user_1",
+        "url": "https://images.pexels.com/photos/16400336/pexels-photo-16400336.jpeg",
+        "description": "Dynamic modern portrait"
+      },
+      {
+        "category": "standard_user_2",
+        "url": "https://images.pexels.com/photos/9547298/pexels-photo-9547298.jpeg",
+        "description": "Artistic black and white portrait"
+      }
+    ],
+    "post_content": [
+      {
+        "category": "crypto_post_image_1",
+        "url": "https://images.pexels.com/photos/30767247/pexels-photo-30767247.jpeg",
+        "description": "3D futuristic Bitcoin"
+      },
+      {
+        "category": "crypto_post_image_2",
+        "url": "https://images.unsplash.com/photo-1732111816779-aeec50f788ba",
+        "description": "Shiny bitcoin logo on black"
+      },
+      {
+        "category": "crypto_post_image_3",
+        "url": "https://images.unsplash.com/photo-1642432556591-72cbc671b707",
+        "description": "Abstract shapes"
+      }
+    ]
+  },
+  "testing": {
+    "rules": "All interactive elements (buttons, links, form inputs, tabs, modal triggers) MUST include a data-testid attribute formatted in kebab-case representing the role, e.g., data-testid='feed-like-button', data-testid='wallet-swap-submit'."
+  },
+  "instructions_to_main_agent": [
+    "Build a mobile-first web app mimicking a native iOS/Android experience. Wrap the main view in a div with 'max-w-md mx-auto min-h-screen bg-white relative shadow-2xl' to enforce the mobile aspect ratio on desktop.",
+    "Implement a sticky top header and fixed bottom navigation bar for core routes: Home (Feed), Discover, Swap, Messages, Profile.",
+    "Use Phosphor Icons (yarn add @phosphor-icons/react) globally. Use <SealCheck weight='fill' className='text-[#0052FF]' /> for the iconic Twitter-style verification badge.",
+    "The Feed must be public and free to view. Posts should have no paywalls. Integrate an anti-NSFW policy reminder in the 'Create Post' flow.",
+    "Messages tab should have locked conversations requiring a subscription fee to the creator. Show a padlock icon and clear 'Subscribe to message' CTAs.",
+    "Wallet & Swap tab must be pristine, similar to Coinbase Wallet or Uniswap. Use large typography for balances and a clean interface for token swaps.",
+    "Use Google Fonts: 'Outfit' for headings and 'Manrope' for body. Configure them in Tailwind.",
+    "Enforce strict accessibility contrast, ensuring text is readable over backgrounds."
+  ]
+}
