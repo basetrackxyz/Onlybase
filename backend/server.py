@@ -34,6 +34,14 @@ async def get_current_user(request: Request) -> dict:
     return await auth_utils.get_current_user(request, db)
 
 
+async def get_optional_user(request: Request) -> Optional[dict]:
+    """Like get_current_user but returns None when unauthenticated (for public reads)."""
+    try:
+        return await auth_utils.get_current_user(request, db)
+    except HTTPException:
+        return None
+
+
 # ---------- Models ----------
 class UserPublic(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -78,6 +86,10 @@ class FarcasterAuthPayload(BaseModel):
 
 class LinkFarcasterPayload(FarcasterAuthPayload):
     pass
+
+
+class WalletPayload(BaseModel):
+    wallet_address: str
 
 
 class NonceResponse(BaseModel):
@@ -318,6 +330,21 @@ async def link_farcaster(payload: LinkFarcasterPayload, response: Response,
     return UserPublic(**current)
 
 
+# ---------- Users: persist wallet ----------
+@api_router.patch("/users/me/wallet", response_model=UserPublic)
+async def update_my_wallet(payload: WalletPayload, current: dict = Depends(get_current_user)):
+    addr = payload.wallet_address.strip()
+    if not addr.startswith("0x") or len(addr) != 42:
+        raise HTTPException(status_code=422, detail="Invalid wallet address")
+    updates = {
+        "wallet_address": addr.lower(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.users.update_one({"user_id": current["user_id"]}, {"$set": updates})
+    current.update(updates)
+    return UserPublic(**current)
+
+
 # ---------- Startup ----------
 @app.on_event("startup")
 async def startup():
@@ -346,6 +373,9 @@ async def startup():
     )
     await db.users.create_index("user_id", unique=True)
     await db.login_attempts.create_index("key", unique=True)
+    await db.posts.create_index("post_id", unique=True)
+    await db.posts.create_index([("created_at", -1)])
+    await db.posts.create_index("author_id")
 
     # Seed admin
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@onlybase.app").lower()
@@ -376,6 +406,11 @@ async def shutdown():
 
 # ---------- Mount router + CORS ----------
 app.include_router(api_router)
+
+# Posts router — uses optional-auth dep; write endpoints internally require auth
+import posts as posts_module
+posts_router = posts_module.build_router(db, get_optional_user)
+app.include_router(posts_router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -13,15 +13,17 @@ import {
 import MobileContainer from "../components/MobileContainer";
 import ThemeToggle from "../components/ThemeToggle";
 import { useAuth } from "../context/AuthContext";
-import { currentUser as mockUser } from "../data/mockData";
+import { useSmartWallet } from "../lib/useSmartWallet";
+import { currentUser as mockUser, tokens } from "../data/mockData";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isConnected, ethBalance, usdcBalance } = useSmartWallet();
   const [showVerifyModal, setShowVerifyModal] = useState(false);
 
-  // Fallback balance (wallet not yet built)
-  const balanceUsd = mockUser.balance.total_usd;
+  const ethPrice = tokens.find((t) => t.symbol === "ETH")?.price || 0;
+  const balanceUsd = isConnected ? usdcBalance + ethBalance * ethPrice : 0;
 
   if (!user) return null;
 
@@ -108,9 +110,13 @@ export default function ProfilePage() {
               <Wallet size={18} weight="fill" />
             </div>
             <div className="flex-1">
-              <div className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Wallet balance</div>
+              <div className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
+                {isConnected ? "Wallet balance · Base" : "Connect wallet"}
+              </div>
               <div className="font-display text-lg font-bold">
-                ${balanceUsd.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {isConnected
+                  ? `$${balanceUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                  : "Tap to create your Smart Wallet"}
               </div>
             </div>
             <ArrowUpRight size={20} />

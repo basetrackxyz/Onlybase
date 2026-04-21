@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
+import Web3Provider from "@/context/Web3Provider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 import OnboardingPage from "@/pages/OnboardingPage";
@@ -102,13 +103,15 @@ function AppRouter() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <div className="App font-sans">
-          <BrowserRouter>
-            <AppRouter />
-          </BrowserRouter>
-        </div>
-      </AuthProvider>
+      <Web3Provider>
+        <AuthProvider>
+          <div className="App font-sans">
+            <BrowserRouter>
+              <AppRouter />
+            </BrowserRouter>
+          </div>
+        </AuthProvider>
+      </Web3Provider>
     </ThemeProvider>
   );
 }
