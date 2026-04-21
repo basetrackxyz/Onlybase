@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    color-scheme: light;
+}
+html.dark {
+    color-scheme: dark;
+}
+
 body {
     margin: 0;
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -11,6 +18,12 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #F5F5F5;
     color: #000000;
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+html.dark body {
+    background-color: #000000;
+    color: #FFFFFF;
 }
 
 h1, h2, h3, h4, h5, h6, .font-display {
@@ -22,19 +35,10 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-/* Hide scrollbar for chrome, safari */
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-.no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Smooth tap response */
-button, a {
-    -webkit-tap-highlight-color: transparent;
-}
+button, a { -webkit-tap-highlight-color: transparent; }
 
 @layer base {
     :root {
@@ -59,37 +63,44 @@ button, a {
         --ring: 0 0% 3.9%;
         --radius: 0.5rem;
     }
+    .dark {
+        --background: 0 0% 6%;
+        --foreground: 0 0% 98%;
+        --card: 0 0% 8%;
+        --card-foreground: 0 0% 98%;
+        --popover: 0 0% 8%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 0 0% 98%;
+        --primary-foreground: 0 0% 9%;
+        --secondary: 0 0% 14.9%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 0 0% 14.9%;
+        --muted-foreground: 0 0% 63.9%;
+        --accent: 0 0% 14.9%;
+        --accent-foreground: 0 0% 98%;
+        --border: 0 0% 14.9%;
+        --input: 0 0% 14.9%;
+        --ring: 0 0% 83.1%;
+    }
 }
 
 @layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+    * { @apply border-border; }
+    body { @apply bg-background text-foreground; }
 }
 
 @layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
+    [data-debug-wrapper="true"] { display: contents !important; }
 }
 
-/* Marquee animation for discover */
 @keyframes marquee {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
 }
-.animate-marquee {
-    animation: marquee 30s linear infinite;
-}
+.animate-marquee { animation: marquee 30s linear infinite; }
 
-/* Subtle pulse for live dot */
 @keyframes live-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
 }
-.animate-live-pulse {
-    animation: live-pulse 1.5s ease-in-out infinite;
-}
+.animate-live-pulse { animation: live-pulse 1.5s ease-in-out infinite; }

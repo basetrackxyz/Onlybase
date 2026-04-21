@@ -1,4 +1,9 @@
 .App {
     min-height: 100vh;
     background-color: #F5F5F5;
+    transition: background-color 200ms ease;
+}
+
+html.dark .App {
+    background-color: #000000;
 }

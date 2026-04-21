@@ -15,7 +15,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="sticky bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 z-40"
+      className="sticky bottom-0 left-0 right-0 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-xl border-t border-gray-100 dark:border-zinc-800 z-40"
       data-testid="bottom-nav"
     >
       <div className="grid grid-cols-5 px-2 pt-2 pb-3">
@@ -31,11 +31,11 @@ export default function BottomNav() {
               <Icon
                 size={24}
                 weight={active ? "fill" : "regular"}
-                className={active ? "text-black" : "text-gray-400"}
+                className={active ? "text-black dark:text-white" : "text-gray-400 dark:text-zinc-500"}
               />
               <span
                 className={`text-[10px] font-semibold tracking-wide ${
-                  active ? "text-black" : "text-gray-400"
+                  active ? "text-black dark:text-white" : "text-gray-400 dark:text-zinc-500"
                 }`}
               >
                 {label}
