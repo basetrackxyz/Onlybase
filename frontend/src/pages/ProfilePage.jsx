@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   SealCheck,
   Gear,
@@ -8,13 +8,31 @@ import {
   ShieldCheck,
   CaretRight,
   Warning,
+  SignOut,
 } from "@phosphor-icons/react";
 import MobileContainer from "../components/MobileContainer";
 import ThemeToggle from "../components/ThemeToggle";
-import { currentUser } from "../data/mockData";
+import { useAuth } from "../context/AuthContext";
+import { currentUser as mockUser } from "../data/mockData";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+
+  // Fallback balance (wallet not yet built)
+  const balanceUsd = mockUser.balance.total_usd;
+
+  if (!user) return null;
+
+  const avatar = user.avatar || mockUser.avatar;
+  const name = user.name || user.handle || "You";
+  const handle = user.handle || "anon";
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <MobileContainer>
@@ -37,8 +55,8 @@ export default function ProfilePage() {
         <div className="px-5 pt-6 pb-5 border-b border-gray-100 dark:border-zinc-800">
           <div className="flex items-start justify-between mb-4">
             <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
+              src={avatar}
+              alt={name}
               className="w-20 h-20 rounded-full object-cover ring-4 ring-white dark:ring-[#0A0A0A] shadow-md"
             />
             <button
@@ -50,13 +68,36 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex items-center gap-1.5 mb-1">
-            <h2 className="font-display text-xl font-bold tracking-tight text-black dark:text-white">{currentUser.name}</h2>
-            {currentUser.verified && <SealCheck weight="fill" size={18} className="text-[#0052FF]" />}
+            <h2 className="font-display text-xl font-bold tracking-tight text-black dark:text-white" data-testid="profile-name">
+              {name}
+            </h2>
+            {user.verified && <SealCheck weight="fill" size={18} className="text-[#0052FF]" />}
           </div>
-          <p className="text-[13px] text-gray-500 dark:text-zinc-500 mb-3">@{currentUser.handle}</p>
-          <p className="text-[13px] text-black dark:text-zinc-200 mb-4">
-            Exploring onchain creators. Big fan of Base. Trading is a hobby, collecting is an obsession.
+          <p className="text-[13px] text-gray-500 dark:text-zinc-500 mb-2" data-testid="profile-handle">
+            @{handle}
           </p>
+
+          {/* Auth methods chips */}
+          {user.auth_methods?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {user.auth_methods.map((m) => (
+                <span
+                  key={m}
+                  className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-zinc-400"
+                >
+                  {m === "email" ? "Email" : m === "google" ? "Google" : "Farcaster"}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {user.bio ? (
+            <p className="text-[13px] text-black dark:text-zinc-200 mb-4">{user.bio}</p>
+          ) : (
+            <p className="text-[13px] text-gray-400 dark:text-zinc-500 italic mb-4">
+              Add a bio to tell the world who you are.
+            </p>
+          )}
 
           <Link
             to="/swap"
@@ -69,20 +110,20 @@ export default function ProfilePage() {
             <div className="flex-1">
               <div className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Wallet balance</div>
               <div className="font-display text-lg font-bold">
-                ${currentUser.balance.total_usd.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ${balanceUsd.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
             <ArrowUpRight size={20} />
           </Link>
 
           <div className="grid grid-cols-3 gap-2 mt-4 text-center">
-            <Stat label="Posts" value="3" />
-            <Stat label="Following" value="28" />
-            <Stat label="Followers" value="142" />
+            <Stat label="Posts" value="0" />
+            <Stat label="Following" value="0" />
+            <Stat label="Followers" value="0" />
           </div>
         </div>
 
-        {!currentUser.verified && (
+        {!user.verified && (
           <div className="px-4 pt-5">
             <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-800 p-5 bg-gradient-to-br from-white to-gray-50 dark:from-[#111111] dark:to-[#0A0A0A]">
               <div className="absolute -right-6 -bottom-6 opacity-[0.08]">
@@ -94,8 +135,7 @@ export default function ProfilePage() {
                   Become a verified creator
                 </h3>
                 <p className="text-[13px] text-gray-600 dark:text-zinc-400 mb-4 leading-relaxed">
-                  Subscribe to the platform to earn a blue checkmark, set your DM price, and accept tips
-                  from fans — all settled onchain on Base.
+                  Subscribe to the platform to earn a blue checkmark, set your DM price, and accept tips onchain on Base.
                 </p>
                 <button
                   onClick={() => setShowVerifyModal(true)}
@@ -103,7 +143,7 @@ export default function ProfilePage() {
                   data-testid="get-verified-btn"
                 >
                   <SealCheck weight="fill" size={16} />
-                  Get verified — 9.99 USDC / month
+                  Get verified — $4 USDC / mo
                 </button>
               </div>
             </div>
@@ -114,6 +154,17 @@ export default function ProfilePage() {
           <MenuRow Icon={Wallet} label="Wallet & Transactions" testid="menu-wallet" />
           <MenuRow Icon={ShieldCheck} label="Content Policy" testid="menu-policy" />
           <MenuRow Icon={Warning} label="Reports & Safety" testid="menu-safety" danger />
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 py-3 px-3 -mx-3 rounded-xl active:bg-gray-50 dark:active:bg-zinc-900 transition-colors"
+            data-testid="logout-btn"
+          >
+            <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-zinc-800 text-black dark:text-white flex items-center justify-center">
+              <SignOut size={16} weight="fill" />
+            </div>
+            <span className="flex-1 text-left text-[14px] font-semibold text-black dark:text-white">Sign out</span>
+            <CaretRight size={14} className="text-gray-400 dark:text-zinc-500" />
+          </button>
         </div>
 
         <div className="px-5 py-5 text-[11px] text-gray-400 dark:text-zinc-500 leading-relaxed">
@@ -139,7 +190,7 @@ export default function ProfilePage() {
                 Get the blue checkmark
               </h3>
               <p className="text-[13px] text-gray-600 dark:text-zinc-400 leading-relaxed">
-                Pay 9.99 USDC/month onchain to unlock verified creator status.
+                Pay $4 USDC/month (or $40/year) onchain to unlock verified creator status.
               </p>
             </div>
 
@@ -154,7 +205,7 @@ export default function ProfilePage() {
               className="w-full bg-[#0052FF] text-white rounded-full py-4 font-semibold text-[15px] hover:bg-[#0046d6] active:scale-[0.98] transition-all"
               data-testid="confirm-verify"
             >
-              Confirm & pay with USDC
+              Continue to payment (coming soon)
             </button>
             <button
               onClick={() => setShowVerifyModal(false)}

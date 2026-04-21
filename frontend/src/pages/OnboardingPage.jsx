@@ -42,7 +42,7 @@ export default function OnboardingPage() {
 
           <div className="space-y-3">
             <button
-              onClick={() => navigate("/feed")}
+              onClick={() => navigate("/login")}
               className="w-full bg-black dark:bg-white text-white dark:text-black rounded-full py-4 font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-gray-800 dark:hover:bg-gray-200 active:scale-[0.98] transition-all"
               data-testid="onboarding-get-started"
             >
@@ -50,11 +50,11 @@ export default function OnboardingPage() {
               <ArrowRight size={18} weight="bold" />
             </button>
             <button
-              onClick={() => navigate("/feed")}
+              onClick={() => navigate("/login")}
               className="w-full border border-gray-200 dark:border-zinc-700 text-black dark:text-white rounded-full py-4 font-semibold text-[15px] hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
               data-testid="onboarding-connect-wallet"
             >
-              Connect Base wallet
+              Sign in
             </button>
             <p className="text-[11px] text-center text-gray-400 dark:text-zinc-500 pt-2 leading-relaxed">
               By continuing, you agree to the content policy.<br />
