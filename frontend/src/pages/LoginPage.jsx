@@ -136,7 +136,7 @@ export default function LoginPage({ mode: initialMode = "login" }) {
             <FarcasterLoginButton />
           </div>
 
-          <div className="text-center mt-auto pt-8 text-[13px] text-gray-500 dark:text-zinc-400">
+          <div className="text-center mb-5 pt-4 text-[13px] text-gray-500 dark:text-zinc-400">
             {mode === "login" ? (
               <>
                 New here?{" "}

@@ -1,65 +1,80 @@
 # OnlyBase — Product Requirements
 
 ## Original Problem Statement
-Build a mobile app like OnlyFans but for crypto (not adults). App name: **OnlyBase**. Posts are FREE to view for everyone. Creators pay the platform a subscription to get a blue verified checkmark (Twitter-style scalloped badge) and unlock monetization. Messaging creators requires paying that creator's subscription price. In-app wallet with send/receive, swap, and trade for any token on the Base network. NSFW content = permanent account ban with no recovery.
+Crypto creator platform on Base (mobile-first web app). App name: OnlyBase. Blue Twitter-style verified badge. Free public posts, paid DMs per creator, in-app Base wallet with swap. Hard no-NSFW policy with permanent ban. Creators pay $4 USDC/mo or $40/year for verification.
 
 ## Architecture
-- **Frontend**: React 19 + React Router 7, Tailwind CSS (darkMode: class), Phosphor Icons, Outfit + Manrope Google Fonts
-- **Backend**: FastAPI + MongoDB (scaffold only)
-- **Theme**: Light (Swiss high-contrast) + Dark (OLED-ready pure black). Persisted via localStorage.
+- Frontend: React 19 + React Router 7, Tailwind (darkMode:class), Phosphor Icons, Outfit + Manrope, @farcaster/auth-kit, viem
+- Backend: FastAPI + motor/MongoDB (db: `onlybase_db`)
+- Auth: JWT httpOnly cookies (access 15m, refresh 7d), bcrypt hashing, partial unique indexes
+- Theme: Light + Dark mode with localStorage persistence
 
-## Core Requirements
-- Twitter-style scalloped blue verification badge (Phosphor SealCheck filled, #0052FF)
-- Public & free feed (no paywall on posts)
-- Paid DMs per creator (creator sets price)
-- Platform verification fee (~9.99 USDC/mo) for blue badge
-- In-app Base network wallet
-- Token swap on Base
-- Hard no-NSFW policy with permanent bans
-- Mobile-first responsive web experience
-- Light + Dark mode toggle
+## User Choices Made
+1. **Auth**: Email+password (JWT) + Emergent Google + Farcaster SIWF — unified into one users collection
+2. **Wallet**: Coinbase Smart Wallet (in-app, passkey UX) — pending next phase
+3. **NSFW**: Sightengine — pending next phase
+4. **Media**: Cloudinary — pending next phase
+5. **Payment**: Real USDC on Base ($4/mo or $40/year) — pending next phase
 
 ## Implemented (Jan 2026)
 
-### Session 1 — Design scaffolding with mock data
-- Full mobile-first UI across all 8 screens (Onboarding, Feed, Discover, Swap/Wallet, Messages, Profile, Creator Profile, Create Post)
-- Typography: Outfit + Manrope, Base blue accent only on verified badges and primary CTAs
-- Bottom navigation with 5 tabs
-- All interactive elements have data-testid
+### Session 1 — Design scaffolding (mock data)
+- 8 screens: Onboarding, Feed, Discover, Swap/Wallet, Messages, Profile, Creator Profile, Create Post
+- Mobile container, bottom nav, sticky headers, stories rail
+- Twitter-style scalloped blue verified badge (Phosphor SealCheck)
 
 ### Session 2 — Dark mode
-- ThemeContext + useTheme hook with localStorage persistence
-- ThemeToggle component (sun/moon icon)
-- Toggle visible in every screen header + onboarding top-right
+- ThemeContext + localStorage persistence
+- ThemeToggle in every screen header
 - All 8 screens updated with Tailwind `dark:` variants
-- Pure black (#000) app background, #0A0A0A mobile container in dark mode
-- Wallet card and modals also respect dark mode with proper border/ring treatment
 
-**Status: FRONTEND-ONLY. All data mocked. No backend yet.**
+### Session 3 — Unified authentication (Phase 1 P0)
+- **Backend** (`/app/backend/`):
+  - `auth.py`: bcrypt hashing, JWT create/verify, set/clear cookies, get_current_user, ensure_unique_handle, fetch_emergent_session, verify_siwf_signature (SIWE + EIP-191)
+  - `server.py`: `/api/auth/{register,login,logout,me,refresh,nonce,google,farcaster,farcaster/link}` endpoints
+  - Startup: partial unique indexes on email/handle/google_id/farcaster_fid (excludes nulls); admin seed (admin@onlybase.app / admin123)
+  - Brute-force lockout (5 attempts → 15 min) keyed by X-Forwarded-For (works behind k8s ingress)
+  - UserPublic model with role, auth_methods, farcaster_fid
+- **Frontend** (`/app/frontend/src/`):
+  - `context/AuthContext.jsx` + `context/ThemeContext.jsx`
+  - `lib/api.js` (axios w/ withCredentials)
+  - `pages/LoginPage.jsx` — login/register toggle + Google + Farcaster
+  - `pages/AuthCallback.jsx` — processes Emergent `#session_id=` in render
+  - `components/FarcasterLoginButton.jsx` — AuthKitProvider + SignInButton (fetches nonce from backend, relabeled "Continue with Farcaster")
+  - `components/ProtectedRoute.jsx` — loading → redirect to /login
+  - `App.js` — AppRouter processes session_id in render before Routes to avoid race conditions
+  - `ProfilePage.jsx` — uses real user data + auth_methods chips + Sign out button
+- **Credentials**: Saved to `/app/memory/test_credentials.md`
+- **Testing**: `/app/auth_testing.md` playbook saved
 
-## Prioritized Backlog (P0 awaiting user decisions)
-- Authentication (Emergent Google / JWT / both) — pending user choice
-- Base wallet connect (Coinbase Smart Wallet / WalletConnect / mocked) — pending user choice
-- NSFW moderation provider (Sightengine / AWS Rekognition / hive.ai / manual reports) — pending user choice
-- Media storage (Cloudinary / S3 / text-only for MVP) — pending user choice
-- Verification payment flow (simulated / real USDC on Base / Stripe fiat) — pending user choice
-- Real-time messaging (WebSocket) for subscribed conversations
-- Post CRUD with real DB persistence
-- Tipping flow onchain
+### Tested & Working
+- Register, login, /me, logout, refresh, nonce, google(401 for invalid), farcaster(401 for invalid), duplicate email (409), wrong password (401), brute-force lockout (429 on 6th attempt after fix), admin seed, protected routes redirect to /login when unauthenticated, full UI flow
 
-## P1
-- Aerodrome/0x integration for real token swap (deferred per user)
+**Status: Auth fully operational. All feed/swap/messaging data still MOCKED pending next phases.**
+
+## Backlog
+
+### Next Phase — P0 remaining
+- Coinbase Smart Wallet integration (in-app wallet)
+- Post CRUD (create, list, like, comment) with DB
+- Cloudinary media upload
+- Sightengine NSFW moderation on post create → auto-ban
+- Creator verification flow ($4/mo or $40/yr USDC on Base)
+- DM subscription purchase + conversation unlock
+- Real-time messaging (WebSocket)
+
+### P1
+- Aerodrome/0x swap integration (deferred per user)
+- Tipping onchain
 - Follow/follower system
 - Notifications
 - Search
 
-## P2
-- Creator referral split
+### P2
+- Creator referral split (10% onchain)
 - Analytics dashboard
-- Live streaming / audio rooms
-- Leaderboards
-- PWA / native build
+- Live streaming
 
-## Next Actions
-1. **User to pick options** for auth, wallet, NSFW moderation, media storage, payment flow
-2. Begin P0 backend once decisions are made
+## Known non-critical notes
+- Cookie flags hard-coded `secure=True, samesite="none"` (fine for HTTPS preview, may need env-driven flag for local HTTP dev)
+- AuthContext swallows network errors as "not authenticated" — can be differentiated later

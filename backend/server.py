@@ -44,6 +44,7 @@ class UserPublic(BaseModel):
     avatar: Optional[str] = None
     bio: str = ""
     verified: bool = False
+    role: str = "user"
     auth_methods: List[str] = []
     farcaster_fid: Optional[int] = None
     wallet_address: Optional[str] = None
@@ -125,8 +126,12 @@ async def register(payload: RegisterPayload, response: Response):
 @api_router.post("/auth/login", response_model=UserPublic)
 async def login(payload: LoginPayload, response: Response, request: Request):
     email = payload.email.lower()
-    ip = request.client.host if request.client else "unknown"
+    # Behind k8s ingress, request.client.host is the proxy pod IP which rotates across replicas.
+    # Use X-Forwarded-For (first entry) to key brute-force attempts to the real client.
+    xff = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+    ip = xff or (request.client.host if request.client else "unknown")
     key = f"{ip}:{email}"
+    from datetime import timedelta
 
     # Brute-force check
     attempt = await db.login_attempts.find_one({"key": key})
@@ -137,13 +142,11 @@ async def login(payload: LoginPayload, response: Response, request: Request):
 
     user = await db.users.find_one({"email": email}, {"_id": 0})
     if not user or not auth_utils.verify_password(payload.password, user.get("password_hash") or ""):
-        # increment attempts
+        # Increment attempts. Only extend lockout when we just hit the threshold.
+        new_locked_until = (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat()
         await db.login_attempts.update_one(
             {"key": key},
-            {"$inc": {"count": 1}, "$set": {
-                "locked_until": (datetime.now(timezone.utc).replace(microsecond=0)).isoformat()
-                if False else (datetime.now(timezone.utc) + __import__("datetime").timedelta(minutes=15)).isoformat()
-            }},
+            {"$inc": {"count": 1}, "$set": {"locked_until": new_locked_until}},
             upsert=True,
         )
         raise HTTPException(status_code=401, detail="Invalid email or password")

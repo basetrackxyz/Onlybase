@@ -67,7 +67,7 @@ function FarcasterInner() {
           width: 100% !important;
           border-radius: 9999px !important;
           padding: 12px 16px !important;
-          font-size: 13px !important;
+          font-size: 0 !important;
           font-weight: 600 !important;
           background: #7C65C1 !important;
           color: white !important;
@@ -76,6 +76,15 @@ function FarcasterInner() {
           align-items: center !important;
           justify-content: center !important;
           gap: 8px !important;
+          height: 44px !important;
+          position: relative !important;
+        }
+        .onlybase-fc-button button::before {
+          content: 'Continue with Farcaster';
+          font-size: 13px !important;
+          font-weight: 600 !important;
+          color: white;
+          letter-spacing: 0.01em;
         }
         .onlybase-fc-button button:hover { opacity: 0.9 !important; }
       `}</style>
