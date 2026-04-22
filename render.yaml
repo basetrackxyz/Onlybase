@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: onlybase-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r ../requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URL
+        scope: run
+        value: ""
+      - key: DB_NAME
+        scope: run
+        value: ""
+      - key: JWT_SECRET
+        scope: run
+        value: ""
+      - key: CLOUDINARY_CLOUD_NAME
+        scope: run
+        value: ""
+      - key: CLOUDINARY_API_KEY
+        scope: run
+        value: ""
+      - key: CLOUDINARY_API_SECRET
+        scope: run
+        value: ""
+      - key: SIGHTENGINE_USER
+        scope: run
+        value: ""
+      - key: SIGHTENGINE_SECRET
+        scope: run
+        value: ""
+      - key: APP_DOMAIN
+        scope: run
+        value: ""
+      - key: CORS_ORIGINS
+        scope: run
+        value: ""
