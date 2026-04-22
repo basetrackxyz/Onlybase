@@ -9,7 +9,7 @@ export const wagmiConfig = createConfig({
   connectors: [
     coinbaseWallet({
       appName: "OnlyBase",
-      appLogoUrl: "https://static.prod-images.emergentagent.com/jobs/96d99d58-6e9a-4982-a9ae-b42ab2b51d16/images/5040964c87025d2c91a6c45d841eb58ab57a242a23d0707599ceff4c9f1421d2.png",
+      appLogoUrl: "https://via.placeholder.com/256",
       preference: "smartWalletOnly",
     }),
   ],

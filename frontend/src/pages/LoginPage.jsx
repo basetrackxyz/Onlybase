@@ -37,12 +37,6 @@ export default function LoginPage({ mode: initialMode = "login" }) {
     }
   };
 
-  const continueWithGoogle = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    const redirectUrl = window.location.origin + "/auth/callback";
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-  };
-
   return (
     <div className="min-h-screen bg-[#F5F5F5] dark:bg-black flex items-stretch justify-center transition-colors">
       <div className="relative w-full max-w-md min-h-screen bg-white dark:bg-[#0A0A0A] flex flex-col shadow-2xl overflow-hidden">

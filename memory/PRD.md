@@ -10,7 +10,7 @@ Crypto creator platform on Base (mobile-first web app). App name: OnlyBase. Blue
 - Theme: Light + Dark mode with localStorage persistence
 
 ## User Choices Made
-1. **Auth**: Email+password (JWT) + Emergent Google + Farcaster SIWF — unified into one users collection
+1. **Auth**: Email+password (JWT) + Farcaster SIWF — unified into one users collection
 2. **Wallet**: Coinbase Smart Wallet (in-app, passkey UX) — pending next phase
 3. **NSFW**: Sightengine — pending next phase
 4. **Media**: Cloudinary — pending next phase
@@ -30,7 +30,7 @@ Crypto creator platform on Base (mobile-first web app). App name: OnlyBase. Blue
 
 ### Session 3 — Unified authentication (Phase 1 P0)
 - **Backend** (`/app/backend/`):
-  - `auth.py`: bcrypt hashing, JWT create/verify, set/clear cookies, get_current_user, ensure_unique_handle, fetch_emergent_session, verify_siwf_signature (SIWE + EIP-191)
+  - `auth.py`: bcrypt hashing, JWT create/verify, set/clear cookies, get_current_user, ensure_unique_handle, verify_siwf_signature (SIWE + EIP-191)
   - `server.py`: `/api/auth/{register,login,logout,me,refresh,nonce,google,farcaster,farcaster/link}` endpoints
   - Startup: partial unique indexes on email/handle/google_id/farcaster_fid (excludes nulls); admin seed (admin@onlybase.app / admin123)
   - Brute-force lockout (5 attempts → 15 min) keyed by X-Forwarded-For (works behind k8s ingress)
@@ -39,7 +39,7 @@ Crypto creator platform on Base (mobile-first web app). App name: OnlyBase. Blue
   - `context/AuthContext.jsx` + `context/ThemeContext.jsx`
   - `lib/api.js` (axios w/ withCredentials)
   - `pages/LoginPage.jsx` — login/register toggle + Google + Farcaster
-  - `pages/AuthCallback.jsx` — processes Emergent `#session_id=` in render
+  - `pages/AuthCallback.jsx` — processes OAuth `#session_id=` in render
   - `components/FarcasterLoginButton.jsx` — AuthKitProvider + SignInButton (fetches nonce from backend, relabeled "Continue with Farcaster")
   - `components/ProtectedRoute.jsx` — loading → redirect to /login
   - `App.js` — AppRouter processes session_id in render before Routes to avoid race conditions

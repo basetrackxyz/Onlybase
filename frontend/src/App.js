@@ -19,8 +19,6 @@ import CreatePostPage from "@/pages/CreatePostPage";
 
 function AppRouter() {
   const location = useLocation();
-  // CRITICAL: Process Emergent Google OAuth session_id from hash synchronously during render
-  // so the AuthProvider doesn't race ahead with /auth/me before we can establish the cookie
   if (location.hash?.includes("session_id=")) {
     return <AuthCallback />;
   }

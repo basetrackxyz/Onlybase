@@ -69,8 +69,7 @@ class LoginPayload(BaseModel):
     password: str
 
 
-class GoogleSessionPayload(BaseModel):
-    session_id: str
+
 
 
 class FarcasterAuthPayload(BaseModel):
@@ -206,28 +205,7 @@ async def refresh(request: Request, response: Response):
         raise HTTPException(status_code=401, detail="Invalid refresh token")
 
 
-# ---------- Auth: Google (Emergent OAuth) ----------
-@api_router.post("/auth/google", response_model=UserPublic)
-async def google_auth(payload: GoogleSessionPayload, response: Response):
-    """Exchange Emergent session_id for user info, then issue OUR JWT cookies."""
-    data = await auth_utils.fetch_emergent_session(payload.session_id)
-    if not data:
-        raise HTTPException(status_code=401, detail="Invalid or expired session")
-
-    google_id = data.get("id")
-    email = (data.get("email") or "").lower()
-    name = data.get("name") or email.split("@")[0]
-    picture = data.get("picture")
-
-    # Find existing: by google_id OR by email
-    user = await db.users.find_one({"google_id": google_id}, {"_id": 0})
-    if not user and email:
-        user = await db.users.find_one({"email": email}, {"_id": 0})
-
-    if user:
-        # Link google if needed
-        updates = {"updated_at": datetime.now(timezone.utc).isoformat()}
-        if not user.get("google_id"):
+# ---------- Auth: Refresh Token ----------
             updates["google_id"] = google_id
         if "google" not in (user.get("auth_methods") or []):
             updates["auth_methods"] = list(set((user.get("auth_methods") or []) + ["google"]))

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 /**
- * Processes the Emergent Google OAuth fragment (#session_id=...).
+ * Processes the Google OAuth fragment (#session_id=...).
  * Called once from AppRouter when the URL hash contains session_id.
  */
 export default function AuthCallback() {

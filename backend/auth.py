@@ -14,7 +14,6 @@ from eth_account import Account
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_MIN = 15
 REFRESH_TOKEN_DAYS = 7
-EMERGENT_SESSION_DATA_URL = "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data"
 
 
 # ---------- Password hashing ----------
@@ -132,20 +131,7 @@ async def ensure_unique_handle(db, base: str) -> str:
     return candidate
 
 
-# ---------- Emergent Google OAuth ----------
-async def fetch_emergent_session(session_id: str) -> Optional[dict]:
-    """Exchange Emergent session_id for user profile + session_token."""
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        try:
-            r = await client.get(
-                EMERGENT_SESSION_DATA_URL,
-                headers={"X-Session-ID": session_id},
-            )
-            if r.status_code != 200:
-                return None
-            return r.json()
-        except httpx.HTTPError:
-            return None
+
 
 
 # ---------- Farcaster SIWF verification ----------

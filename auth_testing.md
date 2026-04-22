@@ -1,10 +1,9 @@
 # OnlyBase Auth Testing Playbook
 
-This app uses **unified JWT auth** (httpOnly access_token + refresh_token cookies) with 3 entry methods:
+This app uses **unified JWT auth** (httpOnly access_token + refresh_token cookies) with 2 entry methods:
 
 1. Email + password (register / login)
-2. Emergent-managed Google OAuth
-3. Sign In With Farcaster (SIWF)
+2. Sign In With Farcaster (SIWF)
 
 All three produce identical JWT cookies and hit the same MongoDB `users` collection with `user_id` (uuid string, never `_id`).
 
@@ -18,7 +17,6 @@ Base path: `{REACT_APP_BACKEND_URL}/api/auth`
 - `GET /me` (authenticated) → returns user
 - `POST /refresh` → rotates access token using refresh_token cookie
 - `GET /nonce` → returns `{nonce}` used by SIWF
-- `POST /google` — body `{session_id}` (from Emergent callback) → issues JWT cookies
 - `POST /farcaster` — body `{fid, username, displayName, bio, pfpUrl, signature, message, nonce}` → verifies SIWF, issues JWT cookies
 - `POST /farcaster/link` (authenticated) — same body, links to current user
 
@@ -40,7 +38,7 @@ Admin doc should have role: "admin" and verified: true.
 ## curl smoke test
 
 ```
-API=https://hey-talk-247.preview.emergentagent.com/api
+API=http://localhost:8000/api
 
 # register
 curl -s -c /tmp/c.txt -X POST "$API/auth/register" -H "Content-Type: application/json" \
@@ -62,12 +60,10 @@ curl -s -b /tmp/c.txt -X POST "$API/auth/logout"
 
 ## Frontend testing notes
 
-- Login page at `/login`
-- Google button redirects to `https://auth.emergentagent.com/?redirect=<ORIGIN>/auth/callback`. On return with `#session_id=...` fragment, `AppRouter` picks it up in **render** (not useEffect) to avoid race conditions and calls `/api/auth/google`.
 - Farcaster button (`FarcasterLoginButton.jsx`) uses `@farcaster/auth-kit`. It fetches a nonce from `/api/auth/nonce`, shows a QR code for Warpcast, and on success calls `/api/auth/farcaster`.
 - Protected routes: `/feed`, `/discover`, `/swap`, `/messages`, `/profile`, `/creator/:id`, `/create`.
 - Unauthenticated hits to protected routes redirect to `/login`.
-- `AuthProvider` checks `/auth/me` on mount UNLESS the URL hash has `session_id=` (so `AuthCallback` can establish the session first).
+- `AuthProvider` checks `/auth/me` on mount.
 
 ## SIWF Testing
 
