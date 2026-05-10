@@ -126,10 +126,10 @@ class TestFarcasterAuth:
         nonce = requests.get(f"{API}/auth/nonce").json()["nonce"]
         # Build a plausible-looking SIWF message but with bogus signature
         message = (
-            "hey-talk-247.preview.emergentagent.com wants you to sign in with your Ethereum account:\n"
+            "onlybase.app wants you to sign in with your Ethereum account:\n"
             "0x0000000000000000000000000000000000000000\n\n"
             "Farcaster Auth\n\n"
-            "URI: https://hey-talk-247.preview.emergentagent.com\n"
+            "URI: https://onlybase.app\n"
             "Version: 1\n"
             f"Chain ID: 10\n"
             f"Nonce: {nonce}\n"
